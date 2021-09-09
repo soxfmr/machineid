@@ -12,12 +12,12 @@ func TestID(t *testing.T) {
 	}
 }
 
-func TestProtectedID(t *testing.T) {
+func TestHashID(t *testing.T) {
 	id, err := ID()
 	if err != nil {
 		t.Error(err)
 	}
-	hash, err := ProtectedID("app.id")
+	hash, err := HashID(nil)
 	if err != nil {
 		t.Error(err)
 	}

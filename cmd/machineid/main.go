@@ -11,6 +11,7 @@
 package main
 
 import (
+	"crypto/md5"
 	"flag"
 	"fmt"
 	"log"
@@ -22,11 +23,11 @@ const usageStr = `
 Usage: machineid [options]
 
 Options:
-  --appid    <AppID>    Protect machine id by hashing it together with an app id.
+  --hash    Encrypt machine id by hashing it in specified hash algorithm.
 
 Try:
   machineid
-  machineid --appid MyAppID
+  machineid --hash
 `
 
 func usage() {
@@ -34,8 +35,8 @@ func usage() {
 }
 
 func main() {
-	var appID string
-	flag.StringVar(&appID, "appid", "", "Protect machine id by hashing it together with an app id.")
+	var hashed bool
+	flag.BoolVar(&hashed, "hash", false, "Encrypt machine id by hashing it in specified hash algorithm.")
 
 	log.SetFlags(0)
 	flag.Usage = usage
@@ -43,8 +44,9 @@ func main() {
 
 	var id string
 	var err error
-	if appID != "" {
-		id, err = machineid.ProtectedID(appID)
+	if hashed {
+		algo := md5.New()
+		id, err = machineid.HashID(algo)
 	} else {
 		id, err = machineid.ID()
 	}

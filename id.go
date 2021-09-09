@@ -20,7 +20,9 @@
 package machineid // import "github.com/denisbrodbeck/machineid"
 
 import (
+	"crypto/md5"
 	"fmt"
+	"hash"
 )
 
 // ID returns the platform specific machine id of the current host OS.
@@ -33,13 +35,14 @@ func ID() (string, error) {
 	return id, nil
 }
 
-// ProtectedID returns a hashed version of the machine ID in a cryptographically secure way,
-// using a fixed, application-specific key.
-// Internally, this function calculates HMAC-SHA256 of the application ID, keyed by the machine ID.
-func ProtectedID(appID string) (string, error) {
+// HashID returns a hashed version of the machine ID in a specified hash algorithm
+func HashID(algo hash.Hash) (string, error) {
 	id, err := ID()
 	if err != nil {
 		return "", fmt.Errorf("machineid: %v", err)
 	}
-	return protect(appID, id), nil
+	if algo == nil {
+		algo = md5.New()
+	}
+	return hashID(algo, id), nil
 }
